@@ -11,6 +11,7 @@ class EasyDoge extends Component {
         width: number,
         height: number,
         margin: array,
+        fixedKeys: array,
         draggable: bool,
         useCSSTransforms: bool,
         onLayoutChange: func,
@@ -35,6 +36,7 @@ class EasyDoge extends Component {
         width: 100,
         height: 100,
         margin: [10, 10],
+        fixedKeys: [],
         draggable: true,
         useCSSTransforms: true
     };
@@ -53,14 +55,15 @@ class EasyDoge extends Component {
     }
 
     initLayoutMap() {
-        const { col } = this.props;
+        const { col, fixedKeys } = this.props;
         this.layoutMap = {};
 
         React.Children.map(this.props.children, (child, index) => {
+            const fixed = fixedKeys.indexOf(child.key) >= 0;
             this.layoutMap[child.key] = ({
                 x: index % col,
                 y: Math.floor(index / col),
-                fixed: child.props.fixed || false,
+                fixed,
                 index,
             })
         });

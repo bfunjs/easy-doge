@@ -1,17 +1,18 @@
 import ReactDOM from 'react-dom'
 import React, { Component } from 'react'
-import { EasyDoge } from '../lib'
+import { EasyDoge } from '../src'
 
 import './style.css'
 
 class Index extends Component {
     render() {
         const dataSource = new Array(6).fill(1)
+        const fixedKeys = ['0', '1']
         return (
-            <EasyDoge width={200} height={200} col={4} onLayoutChange={this.onLayoutChange}>
+            <EasyDoge width={200} height={200} col={4} fixedKeys={fixedKeys} onLayoutChange={this.onLayoutChange}>
                 {
                     dataSource.map((item, index) => (
-                        <div key={index} className="my-doge" fixed={index <= 1 ? "true" : undefined}>
+                        <div key={index} className="my-doge">
                             hello world {index}
                         </div>
                     ))
