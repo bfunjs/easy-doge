@@ -1,0 +1,47 @@
+{
+  "name": "@bfunjs/easy-doge",
+  "version": "0.0.1",
+  "description": "react draggable grid list",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config ./example/webpack.config.js",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bfunjs/easy-doge.git"
+  },
+  "keywords": [
+    "react",
+    "draggable"
+  ],
+  "author": "suibincheng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bfunjs/easy-doge/issues"
+  },
+  "homepage": "https://github.com/bfunjs/easy-doge#readme",
+  "dependencies": {
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-draggable": "^3.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "prop-types": "^15.7.2",
+    "url-loader": "^2.1.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7",
+    "webpack-dev-server": "^3.8.0"
+  }
+}
