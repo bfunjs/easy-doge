@@ -5,15 +5,28 @@ import { EasyDoge } from '../src'
 import './style.css'
 
 class Index extends Component {
+    state = {
+        dataSource: [0, 1, 2, 3, 4, 5, 6]
+    };
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({
+                dataSource: [0, 1, 2, 3, 4, 5, 6, 7]
+            });
+        }, 3000)
+    }
+
     render() {
-        const dataSource = new Array(6).fill(1)
+        const { dataSource } = this.state;
         const fixedKeys = ['0', '1']
         return (
-            <EasyDoge className="1322" width={200} height={200} col={4} fixedKeys={fixedKeys} onLayoutChange={this.onLayoutChange}>
+            <EasyDoge className="1322" width={200} height={200} col={4} fixedKeys={fixedKeys}
+                      onLayoutChange={this.onLayoutChange}>
                 {
                     dataSource.map((item, index) => (
                         <div key={index} className="my-doge">
-                            hello world {index}
+                            hello world {item}
                         </div>
                     ))
                 }
@@ -23,6 +36,8 @@ class Index extends Component {
 
     onLayoutChange = (list) => {
         console.log('列表排序改变了', list)
+        const { dataSource } = this.state
+        console.log('现在的列表', list.map(({ key }) => dataSource[key]))
     }
 }
 
