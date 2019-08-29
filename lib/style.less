@@ -1,0 +1,14 @@
+.easy-doge {
+  position: relative;
+
+  .doge {
+    position: absolute;
+    transition: transform 0.2s;
+    z-index: 1;
+
+    &.react-draggable-dragging {
+      transition: none;
+      z-index: 10;
+    }
+  }
+}

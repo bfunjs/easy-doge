@@ -1,11 +1,14 @@
 {
   "name": "@bfunjs/easy-doge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "react draggable grid list",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "dev": "webpack-dev-server --config ./example/webpack.config.js",
-    "build": "webpack"
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf lib",
+    "compile": "ncp src lib && BABEL_ENV=common babel lib -d lib",
+    "publish": "npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -27,6 +30,7 @@
     "react-draggable": "^3.3.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
@@ -38,7 +42,9 @@
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.8.0",
+    "ncp": "^2.0.0",
     "prop-types": "^15.7.2",
+    "rimraf": "^3.0.0",
     "url-loader": "^2.1.0",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
