@@ -9,7 +9,7 @@ class Index extends Component {
         const dataSource = new Array(6).fill(1)
         const fixedKeys = ['0', '1']
         return (
-            <EasyDoge width={200} height={200} col={4} fixedKeys={fixedKeys} onLayoutChange={this.onLayoutChange}>
+            <EasyDoge style={{ height: '800px' }} className="1322" width={200} height={200} col={4} fixedKeys={fixedKeys} onLayoutChange={this.onLayoutChange}>
                 {
                     dataSource.map((item, index) => (
                         <div key={index} className="my-doge">

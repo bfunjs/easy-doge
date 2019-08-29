@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Doge from "./Doge";
 import { getCurrentIndex } from "./utils";
 
-const { number, bool, array, func } = PropTypes;
+const { number, string, bool, array, func } = PropTypes;
 
 class EasyDoge extends Component {
     static propTypes = {
@@ -29,6 +29,7 @@ class EasyDoge extends Component {
                 keys[child.key] = true;
             });
         },
+        className: string
     };
 
     static defaultProps = {
@@ -70,8 +71,12 @@ class EasyDoge extends Component {
     }
 
     render() {
+        const classNames = ['easy-doge']
+        if (this.props.className) {
+            classNames.push(this.props.className.toString())
+        }
         return (
-            <div className="easy-doge">
+            <div className={classNames.join(' ')} style={this.props.style}>
                 {
                     React.Children.map(this.props.children, child => this.getDoge(child))
                 }
