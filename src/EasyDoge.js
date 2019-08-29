@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import Doge from "./Doge";
-import { getCurrentIndex } from "./utils";
+import { getClassNames, getCurrentIndex } from "./utils";
 
 const { number, string, bool, array, func } = PropTypes;
 
@@ -71,12 +71,16 @@ class EasyDoge extends Component {
     }
 
     render() {
-        const classNames = ['easy-doge']
-        if (this.props.className) {
-            classNames.push(this.props.className.toString())
-        }
+        const { className, style, height, margin, col } = this.props;
+        const totalHeight = (height + margin[0]) * (Math.floor((Object.keys(this.layoutMap).length - 1) / col) + 1);
+        const classNames = getClassNames('easy-doge', className);
+        const styleNames = {
+            height: totalHeight,
+            ...style
+        };
+
         return (
-            <div className={classNames.join(' ')} style={this.props.style}>
+            <div className={classNames} style={styleNames}>
                 {
                     React.Children.map(this.props.children, child => this.getDoge(child))
                 }
@@ -86,7 +90,7 @@ class EasyDoge extends Component {
 
     getDoge = (child) => {
         const { width, height, draggable, margin } = this.props;
-        const { x, y, index, fixed } = this.state.dragging >= 0 ? this.newLayout[child.key] : this.layoutMap[child.key]
+        const { x, y, index, fixed } = this.state.dragging >= 0 ? this.newLayout[child.key] : this.layoutMap[child.key];
         const allowDraggable = draggable && !fixed;
         return (
             <Doge width={width} height={height} draggable={allowDraggable} margin={margin} x={x} y={y}
@@ -105,7 +109,7 @@ class EasyDoge extends Component {
     };
     onDragMove = ({ left, top }) => {
         const { margin = [], width, height, col } = this.props;
-        const { dragging } = this.state
+        const { dragging } = this.state;
         const posLeft = left + width / 2;
         const posTop = top + height / 2;
 
@@ -133,7 +137,7 @@ class EasyDoge extends Component {
 
         this.setState({ position: {} })
     };
-    onDragStop = ({ left, top }) => {
+    onDragStop = () => {
         const { col } = this.props;
         this.layoutMap = Object.keys(this.layoutMap).map(key => {
             let item = this.newLayout[key];
@@ -154,7 +158,10 @@ class EasyDoge extends Component {
             const layoutList = new Array(layoutKeys.length);
             layoutKeys.forEach(key => {
                 const item = this.layoutMap[key];
-                layoutList[item.index] = item
+                layoutList[item.index] = {
+                    key,
+                    ...item
+                }
             });
 
             this.props.onLayoutChange(layoutList)

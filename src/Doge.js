@@ -37,12 +37,11 @@ class Doge extends Component {
                 'doge': true,
             }),
         });
-        el = this.mixinDraggable(el, position, !draggable)
-        return el
+        return this.mixinDraggable(el, position, !draggable)
     }
 
     mixinDraggable(child, pos, disabled) {
-        const position = { x: pos.left, y: pos.top }
+        const position = { x: pos.left, y: pos.top };
         return (
             <DraggableCore
                 position={position}
