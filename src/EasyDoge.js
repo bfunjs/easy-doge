@@ -63,10 +63,10 @@ class EasyDoge extends Component {
 
         React.Children.map(props.children, (child, index) => {
             const fixed = fixedKeys.indexOf(child.key) >= 0;
-            if (this.layoutMap[child.key]) {
-                layout[child.key] = this.layoutMap[child.key];
-                return;
-            }
+            // if (this.layoutMap[child.key]) {
+            //     layout[child.key] = this.layoutMap[child.key];
+            //     return;
+            // }
             layout[child.key] = ({
                 x: index % col,
                 y: Math.floor(index / col),
