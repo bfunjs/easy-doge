@@ -59,13 +59,15 @@ class EasyDoge extends Component {
 
     initLayoutMap(props) {
         const { col, fixedKeys } = props;
+        const layout = {};
 
         React.Children.map(props.children, (child, index) => {
             const fixed = fixedKeys.indexOf(child.key) >= 0;
             if (this.layoutMap[child.key]) {
+                layout[child.key] = this.layoutMap[child.key];
                 return;
             }
-            this.layoutMap[child.key] = ({
+            layout[child.key] = ({
                 x: index % col,
                 y: Math.floor(index / col),
                 fixed,
@@ -73,6 +75,7 @@ class EasyDoge extends Component {
             })
         });
 
+        this.layoutMap = layout;
         this.setState({ layoutMap: this.layoutMap })
         console.log('重新初始化布局', this.layoutMap);
     }
@@ -80,11 +83,6 @@ class EasyDoge extends Component {
     render() {
         const { className, style, height, margin, col } = this.props;
         let layoutCount = Object.keys(this.layoutMap).length;
-        // if (layoutCount !== this.props.children.length) {
-        //     console.log('重新初始化', layoutCount, this.props.children.length);
-        //     this.initLayoutMap();
-        //     layoutCount = Object.keys(this.layoutMap).length;
-        // }
         const totalHeight = (height + margin[0]) * (Math.floor((layoutCount - 1) / col) + 1);
         const classNames = getClassNames('easy-doge', className);
         const styleNames = {

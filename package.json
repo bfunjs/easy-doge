@@ -1,6 +1,6 @@
 {
   "name": "@bfunjs/easy-doge",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "react draggable grid list",
   "main": "lib/index.js",
   "scripts": {

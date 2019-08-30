@@ -12,9 +12,14 @@ class Index extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.setState({
-                dataSource: [0, 1, 2, 3, 4, 5, 6, 7]
+                dataSource: [0, 1, 2, 3, 7, 4, 5, 6]
             });
         }, 3000)
+        setTimeout(() => {
+            this.setState({
+                dataSource: [0, 1, 3, 7, 4, 5, 6]
+            });
+        }, 10000)
     }
 
     render() {
