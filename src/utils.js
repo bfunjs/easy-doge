@@ -22,21 +22,69 @@ export function getClassNames(...args) {
     return names.join(' ')
 }
 
-export function getCurrentIndex(layout, left, top, { margin, width, height }) {
+export function getCurrentIndex(left, top, { layout, margin, width, height, fixed, col }) {
     let newIndex = -1;
     let marginX = margin[0] || 0;
     let marginY = margin[1] || 0;
-    Object.values(layout).forEach(item => {
-        const { x, y, index, fixed } = item;
+
+    layout.forEach((item, index) => {
+        const { x, y } = calcPosition(index, col);
         const l = Math.round((width + marginX) * x);
         const t = Math.round((height + marginY) * y);
         if (left >= l && left <= l + width + marginX) {
             if (top >= t && top <= t + height + marginY) {
-                if (!fixed) {
+                if (fixed.indexOf(item) < 0) {
                     newIndex = index
                 }
             }
         }
     });
     return newIndex
+}
+
+export function calcPosition(index, col) {
+    if (index < 0) {
+        console.warn('请检查KEY是否正确');
+        index = 0;
+    }
+    return {
+        x: index % col,
+        y: Math.floor(index / col),
+    }
+}
+
+export function move(list, fixed, direction) {
+    const data = new Array(list.length).fill(undefined);
+    list = list.filter((value, index) => {
+        if (fixed.indexOf(value) < 0) {
+            return value;
+        }
+        data[index] = value;
+    });
+
+    if (direction) {
+        data[data.length - 1] = list.shift()
+    } else {
+        data[0] = list.pop()
+    }
+
+    data.forEach(((value, index) => {
+        if (value === undefined) {
+            data[index] = list.shift();
+        }
+    }));
+
+    return data
+}
+
+export function sort(dataArr, fixedArr, from, to) {
+    const min = Math.min(from, to);
+    const max = Math.max(from, to);
+
+    const a = dataArr.slice(0, min);
+    const b = dataArr.slice(max + 1);
+    const c = dataArr.slice(min, max + 1);
+
+    const m = move(c, fixedArr, from < to);
+    return [...a, ...m, ...b]
 }

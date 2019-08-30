@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import Doge from "./Doge";
-import { getClassNames, getCurrentIndex } from "./utils";
+import { calcPosition, getClassNames, getCurrentIndex, sort } from "./utils";
 
 const { number, string, bool, array, func } = PropTypes;
 
 class EasyDoge extends Component {
     static propTypes = {
         col: number,
+        fixed: array,  // 不可移动的Key数组
         width: number,
         height: number,
         margin: array,
-        fixedKeys: array,
         draggable: bool,
         useCSSTransforms: bool,
         onLayoutChange: func,
@@ -34,20 +34,19 @@ class EasyDoge extends Component {
 
     static defaultProps = {
         col: 1,
+        fixed: [],
         width: 100,
         height: 100,
         margin: [10, 10],
-        fixedKeys: [],
         draggable: true,
         useCSSTransforms: true
     };
 
     state = {
-        dragging: -1,
-        position: {},
-        layoutMap: {}
+        index: -1,
+        layout: [], // 布局的KEY顺序
+        tmpArr: [], // 临时数组
     };
-    layoutMap = {};
 
     componentWillMount() {
         this.initLayoutMap(this.props);
@@ -58,32 +57,19 @@ class EasyDoge extends Component {
     }
 
     initLayoutMap(props) {
-        const { col, fixedKeys } = props;
-        const layout = {};
-
-        React.Children.map(props.children, (child, index) => {
-            const fixed = fixedKeys.indexOf(child.key) >= 0;
-            if (this.layoutMap[child.key]) {
-                layout[child.key] = this.layoutMap[child.key];
-                return;
-            }
-            layout[child.key] = ({
-                x: index % col,
-                y: Math.floor(index / col),
-                fixed,
-                index,
-            })
+        const layout = [];
+        React.Children.map(props.children, child => {
+            layout.push(child.key)
         });
-
-        this.layoutMap = layout;
-        this.setState({ layoutMap: this.layoutMap })
-        console.log('重新初始化布局', this.layoutMap);
+        this.setState({ layout: layout })
+        console.log('重新初始化布局', layout);
     }
 
     render() {
         const { className, style, height, margin, col } = this.props;
-        let layoutCount = Object.keys(this.layoutMap).length;
-        const totalHeight = (height + margin[0]) * (Math.floor((layoutCount - 1) / col) + 1);
+        const { layout } = this.state;
+
+        const totalHeight = (height + margin[0]) * (Math.floor((layout.length - 1) / col) + 1);
         const classNames = getClassNames('easy-doge', className);
         const styleNames = {
             height: totalHeight,
@@ -100,13 +86,19 @@ class EasyDoge extends Component {
     }
 
     getDoge = (child) => {
-        const { width, height, draggable, margin } = this.props;
-        const layout = this.state.dragging >= 0 ? this.newLayout[child.key] : this.layoutMap[child.key];
-        const { x, y, index, fixed } = layout || {};
-        const allowDraggable = draggable && !fixed;
+        const { width, height, fixed, draggable, margin, col } = this.props;
+        const { layout, tmpArr } = this.state;
+
+        const list = this.state.index >= 0 ? tmpArr : layout;
+
+        const index = list.indexOf(child.key);
+        const { x, y } = calcPosition(index, col);
+        const isFixed = fixed.indexOf(child.key) >= 0;
+        const canDrag = draggable && !isFixed;
+
         return (
-            <Doge width={width} height={height} draggable={allowDraggable} margin={margin} x={x} y={y}
-                  index={index}
+            <Doge width={width} height={height} draggable={canDrag} margin={margin}
+                  x={x} y={y} index={index}
                   onDragStart={this.onDragStart}
                   onDragMove={this.onDragMove}
                   onDragStop={this.onDragStop}>
@@ -115,70 +107,27 @@ class EasyDoge extends Component {
         )
     };
 
-    onDragStart = ({ left, top }, dragging) => {
-        this.newLayout = Object.keys(this.layoutMap).map(key => ({ ...this.layoutMap[key] }));
-        this.setState({ dragging });
+    onDragStart = ({ left, top }, index) => {
+        this.setState({ index, tmpArr: this.state.layout });
     };
     onDragMove = ({ left, top }) => {
-        const { margin = [], width, height, col } = this.props;
-        const { dragging } = this.state;
+        const { fixed, margin, width, height, col } = this.props;
+        const { index, layout } = this.state;
         const posLeft = left + width / 2;
         const posTop = top + height / 2;
 
-        let newIndex = getCurrentIndex(this.layoutMap, posLeft, posTop, { margin, width, height });
+        let newIndex = getCurrentIndex(posLeft, posTop, { layout, fixed, margin, width, height, col });
         if (newIndex < 0) {
-            newIndex = dragging
+            newIndex = index
         }
-
-        const min = Math.min(dragging, newIndex);
-        const max = Math.max(dragging, newIndex);
-        Object.keys(this.newLayout).forEach(key => {
-            const { index } = this.layoutMap[key];
-            if (index === dragging) {
-                this.newLayout[key].index = newIndex;
-                return;
-            }
-            if (index < min || index > max) {
-                this.newLayout[key].index = this.layoutMap[key].index;
-            } else {
-                this.newLayout[key].index = dragging < newIndex ? index - 1 : index + 1;
-            }
-            this.newLayout[key].x = this.newLayout[key].index % col;
-            this.newLayout[key].y = Math.floor(this.newLayout[key].index / col);
-        });
-
-        this.setState({ position: {} })
+        this.setState({ tmpArr: sort(layout, fixed, index, newIndex) })
     };
     onDragStop = () => {
-        const { col } = this.props;
-        this.layoutMap = Object.keys(this.layoutMap).map(key => {
-            let item = this.newLayout[key] || {};
-            let index = item.index;
-            let x = index % col;
-            let y = Math.floor(index / col);
-            return {
-                ...this.layoutMap[key],
-                index,
-                x,
-                y
-            }
-        });
-        this.newLayout = undefined;
-
-        this.setState({ dragging: -1 });
+        const { tmpArr } = this.state;
+        this.setState({ index: -1, layout: tmpArr, tmpArr: [] });
 
         if (this.props.onLayoutChange) {
-            const layoutKeys = Object.keys(this.layoutMap);
-            const layoutList = new Array(layoutKeys.length);
-            layoutKeys.forEach(key => {
-                const item = this.layoutMap[key];
-                layoutList[item.index] = {
-                    key,
-                    ...item
-                }
-            });
-
-            this.props.onLayoutChange(layoutList)
+            this.props.onLayoutChange(tmpArr)
         }
     };
 }
