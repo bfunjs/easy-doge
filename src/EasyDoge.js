@@ -82,9 +82,10 @@ class EasyDoge extends Component {
 
     render() {
         const { className, style, height, margin, col } = this.props;
+        const { dragging } = this.state;
         let layoutCount = Object.keys(this.layoutMap).length;
         const totalHeight = (height + margin[0]) * (Math.floor((layoutCount - 1) / col) + 1);
-        const classNames = getClassNames('easy-doge', className);
+        const classNames = getClassNames('easy-doge', className, dragging >= 0 ? 'is-draggable-dragging' : '');
         const styleNames = {
             height: totalHeight,
             ...style
@@ -151,7 +152,7 @@ class EasyDoge extends Component {
     };
     onDragStop = () => {
         const { col } = this.props;
-        this.layoutMap = Object.keys(this.layoutMap).map(key => {
+        const layout = Object.keys(this.layoutMap).map(key => {
             let item = this.newLayout[key] || {};
             let index = item.index;
             let x = index % col;
@@ -163,7 +164,6 @@ class EasyDoge extends Component {
                 y
             }
         });
-        this.newLayout = undefined;
 
         this.setState({ dragging: -1 });
 
@@ -171,7 +171,7 @@ class EasyDoge extends Component {
             const layoutKeys = Object.keys(this.layoutMap);
             const layoutList = new Array(layoutKeys.length);
             layoutKeys.forEach(key => {
-                const item = this.layoutMap[key];
+                const item = layout[key];
                 layoutList[item.index] = {
                     key,
                     ...item
@@ -179,6 +179,7 @@ class EasyDoge extends Component {
             });
 
             this.props.onLayoutChange(layoutList)
+            this.newLayout = undefined;
         }
     };
 }

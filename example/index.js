@@ -42,8 +42,9 @@ class Index extends Component {
 
     handleDelete = () => {
         const { dataSource } = this.state
+        dataSource.splice(3, 1)
         this.setState({
-            dataSource: dataSource.splice(3)
+            dataSource: dataSource
         });
     };
 
@@ -51,6 +52,11 @@ class Index extends Component {
         console.log('列表排序改变了', list)
         const { dataSource } = this.state
         console.log('现在的列表', list.map(({ key }) => dataSource[key]))
+        this.setState({
+            dataSource: list.map(item => {
+                return dataSource[item.key]
+            })
+        })
     }
 }
 
